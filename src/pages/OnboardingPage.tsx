@@ -26,12 +26,7 @@ export default function OnboardingPage() {
   const isLastStep = step === STEPS.length - 1;
 
   function next() {
-    if (isLastStep) {
-      // A completion transition is intentionally not performed here.
-      // The specification requires a real diagnosis result before persistence.
-      return;
-    }
-    setStep((value) => value + 1);
+    if (!isLastStep) setStep((value) => value + 1);
   }
 
   return (
@@ -39,12 +34,13 @@ export default function OnboardingPage() {
       <p className="eyebrow">CognitiveGYM-NeoX · Onboarding</p>
       <p className="progress">Paso {step + 1} de {STEPS.length}</p>
       <h1>{STEPS[step]}</h1>
-      <p>Contenido de este paso pendiente de la especificación exacta.</p>
+      <p>Este flujo conserva el encuadre de cinco pasos. El diagnóstico que habilita la finalización permanece separado hasta contar con la especificación determinística completa.</p>
       <div className="step-actions">
         <button className="button ghost" disabled={step === 0} onClick={() => setStep((value) => Math.max(0, value - 1))}>Anterior</button>
-        <button className="button primary" onClick={next} disabled={isLastStep}>{isLastStep ? 'Diagnóstico pendiente' : 'Siguiente'}</button>
+        {isLastStep
+          ? <button className="button primary" onClick={() => navigate('/dashboard')}>Ver estado actual</button>
+          : <button className="button primary" onClick={next}>Siguiente</button>}
       </div>
-      <button className="button ghost" type="button" onClick={() => navigate('/')} hidden={status !== 'complete'}>Ir al inicio</button>
     </section>
   );
 }
