@@ -7,7 +7,9 @@ type AuthLocationState = { from?: string };
 export default function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as AuthLocationState | null)?.from ?? '/';
+  const stateFrom = (location.state as AuthLocationState | null)?.from;
+  const queryFrom = new URLSearchParams(location.search).get('next');
+  const from = stateFrom ?? (queryFrom?.startsWith('/') ? queryFrom : '/') ?? '/';
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,7 +42,7 @@ export default function AuthPage() {
     setMessage('');
 
     try {
-      const result = await signInWithGoogle();
+      const result = await signInWithGoogle(from);
       if (result.error) setMessage(result.error.message);
     } finally {
       setSubmitting(false);
