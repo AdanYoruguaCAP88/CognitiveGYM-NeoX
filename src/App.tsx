@@ -47,7 +47,7 @@ function ProtectedScreen({ title }: { title: string }) {
 
 export default function App() {
   return <Layout><Routes>
-    <Route path="/" element={<Screen title="Gimnasio cognitivo para operadores de IA" />} />
+    <Route path="/" element={<ProtectedRoute><OnboardingGate><Screen title="Gimnasio cognitivo para operadores de IA" /></OnboardingGate></ProtectedRoute>} />
     <Route path="/auth" element={<AuthPage />} />
     <Route path="/dashboard" element={<ProtectedRoute><OnboardingGate><DashboardPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
