@@ -10,8 +10,11 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signInWithGoogle(nextPath = '/') {
-  const target = new URL(window.location.origin);
-  target.searchParams.set('next', nextPath.startsWith('/') ? nextPath : '/');
+  const target = new URL('/auth', window.location.origin);
+  target.searchParams.set(
+    'next',
+    nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/'
+  );
 
   return supabase.auth.signInWithOAuth({
     provider: 'google',
