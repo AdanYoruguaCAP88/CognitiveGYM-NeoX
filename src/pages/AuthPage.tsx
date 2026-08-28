@@ -9,7 +9,7 @@ export default function AuthPage() {
   const location = useLocation();
   const stateFrom = (location.state as AuthLocationState | null)?.from;
   const queryFrom = new URLSearchParams(location.search).get('next');
-  const from = stateFrom ?? (queryFrom?.startsWith('/') ? queryFrom : '/') ?? '/';
+  const from = stateFrom ?? (queryFrom && queryFrom.startsWith('/') && !queryFrom.startsWith('//') ? queryFrom : '/');
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
