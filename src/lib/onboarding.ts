@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import type { Archetype } from './engine/coherence';
+import type { CognitiveVector } from './engine/adaptive';
 
 export type OnboardingStatus = 'pending' | 'complete';
 
@@ -26,13 +27,33 @@ export async function getOnboardingStatus(userId: string): Promise<OnboardingSta
   return data && data.length > 0 ? 'complete' : 'pending';
 }
 
+export async function getCurrentCognitiveVector(userId: string): Promise<CognitiveVector | null> {
+  const { data, error } = await supabase
+    .from('cognitive_vectors')
+    .select('clarity, coherence, depth, structure, second_order, bias_control')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  return {
+    clarity: Number(data.clarity),
+    coherence: Number(data.coherence),
+    depth: Number(data.depth),
+    structure: Number(data.structure),
+    secondOrder: Number(data.second_order),
+    biasControl: Number(data.bias_control)
+  };
+}
+
 export type DiagnosisPersistenceInput = {
   userId: string;
   coherenceScore: number;
   archetype: 'lineal' | 'divergente' | 'tactico' | 'exploracion';
   biases: string[];
-  vectorBefore: Record<string, number>;
-  vectorAfter: Record<string, number>;
+  vectorBefore: Record<string, number> | null;
+  vectorAfter: Record<string, number> | null;
 };
 
 export async function persistDiagnosis(input: DiagnosisPersistenceInput) {
