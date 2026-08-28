@@ -1,4 +1,4 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { getOnboardingStatus } from '../lib/onboarding';
@@ -7,7 +7,6 @@ const STEPS = ['Encuadre', 'Expectativas', 'Regla operativa', 'Filosofía', 'Pri
 
 export default function OnboardingPage() {
   const { session } = useAuth();
-  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState<'loading' | 'pending' | 'complete' | 'error'>('loading');
 
@@ -25,10 +24,6 @@ export default function OnboardingPage() {
 
   const isLastStep = step === STEPS.length - 1;
 
-  function next() {
-    if (!isLastStep) setStep((value) => value + 1);
-  }
-
   return (
     <section className="screen onboarding">
       <p className="eyebrow">CognitiveGYM-NeoX · Onboarding</p>
@@ -38,8 +33,8 @@ export default function OnboardingPage() {
       <div className="step-actions">
         <button className="button ghost" disabled={step === 0} onClick={() => setStep((value) => Math.max(0, value - 1))}>Anterior</button>
         {isLastStep
-          ? <button className="button primary" onClick={() => navigate('/dashboard')}>Ver estado actual</button>
-          : <button className="button primary" onClick={next}>Siguiente</button>}
+          ? <button className="button primary" type="button" disabled>Diagnóstico pendiente</button>
+          : <button className="button primary" type="button" onClick={() => setStep((value) => value + 1)}>Siguiente</button>}
       </div>
     </section>
   );
