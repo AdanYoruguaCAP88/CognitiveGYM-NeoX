@@ -3,15 +3,16 @@ import type { Archetype } from './engine/coherence';
 import type { CognitiveVector } from './engine/adaptive';
 
 export type OnboardingStatus = 'pending' | 'complete';
+export type PersistedArchetype = 'lineal' | 'divergente' | 'tactico' | 'exploracion';
 
-const ARCHETYPE_STORAGE: Record<Archetype, DiagnosisPersistenceInput['archetype']> = {
+const ARCHETYPE_STORAGE: Record<Archetype, PersistedArchetype> = {
   Táctico: 'tactico',
   Divergente: 'divergente',
   Exploración: 'exploracion',
   Lineal: 'lineal'
 };
 
-export function toPersistenceArchetype(archetype: Archetype): DiagnosisPersistenceInput['archetype'] {
+export function toPersistenceArchetype(archetype: Archetype): PersistedArchetype {
   return ARCHETYPE_STORAGE[archetype];
 }
 
@@ -50,10 +51,10 @@ export async function getCurrentCognitiveVector(userId: string): Promise<Cogniti
 export type DiagnosisPersistenceInput = {
   userId: string;
   coherenceScore: number;
-  archetype: 'lineal' | 'divergente' | 'tactico' | 'exploracion';
+  archetype: PersistedArchetype;
   biases: string[];
-  vectorBefore: Record<string, number> | null;
-  vectorAfter: Record<string, number> | null;
+  vectorBefore: CognitiveVector | null;
+  vectorAfter: CognitiveVector | null;
 };
 
 export async function persistDiagnosis(input: DiagnosisPersistenceInput) {
