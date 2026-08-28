@@ -6,7 +6,15 @@ import {
   type CoherenceResult
 } from './coherence';
 import type { CognitiveVector } from './adaptive';
-import { toPersistenceArchetype, type DiagnosisPersistenceInput } from '../onboarding';
+
+export type PersistedArchetype = 'lineal' | 'divergente' | 'tactico' | 'exploracion';
+
+const ARCHETYPE_STORAGE: Record<Archetype, PersistedArchetype> = {
+  Táctico: 'tactico',
+  Divergente: 'divergente',
+  Exploración: 'exploracion',
+  Lineal: 'lineal'
+};
 
 export type DiagnosisResult = {
   coherence: CoherenceResult;
@@ -34,11 +42,11 @@ export function createDiagnosis(
   };
 }
 
-export function toDiagnosisPersistenceInput(userId: string, diagnosis: DiagnosisResult): DiagnosisPersistenceInput {
+export function toDiagnosisPersistenceInput(userId: string, diagnosis: DiagnosisResult) {
   return {
     userId,
     coherenceScore: diagnosis.coherence.score,
-    archetype: toPersistenceArchetype(diagnosis.archetype),
+    archetype: ARCHETYPE_STORAGE[diagnosis.archetype],
     biases: diagnosis.biases,
     vectorBefore: diagnosis.vectorBefore,
     vectorAfter: diagnosis.vectorAfter
