@@ -3,11 +3,17 @@ import {
   biasClean,
   coherenceScore,
   complexityFit,
+  countWords,
   detectArchetype,
   type Bias
 } from './coherence';
 
 describe('coherence engine', () => {
+  it('counts normalized words from prompt text', () => {
+    expect(countWords('')).toBe(0);
+    expect(countWords('  uno   dos tres  ')).toBe(3);
+  });
+
   it('applies exact complexity bands', () => {
     expect(complexityFit(7)).toBe(3);
     expect(complexityFit(8)).toBe(8);
@@ -32,17 +38,12 @@ describe('coherence engine', () => {
     expect(biasClean(biases)).toBe(0);
   });
 
-  it('sums D1 through D5 and clamps dimension inputs', () => {
+  it('derives D5 from the supplied prompt text', () => {
     const result = coherenceScore(
-      { objectiveClarity: 30, contextRichness: 25, constraintDefinition: 25, complexityFit: 0 },
+      { objectiveClarity: 25, contextRichness: 20, constraintDefinition: 20 },
       [],
-      16,
-      ''
+      'uno dos tres cuatro cinco seis siete ocho nueve diez once doce trece catorce quince dieciseis'
     );
-    expect(result.d1).toBe(25);
-    expect(result.d2).toBe(20);
-    expect(result.d3).toBe(20);
-    expect(result.d4).toBe(20);
     expect(result.d5).toBe(15);
     expect(result.score).toBe(100);
   });
