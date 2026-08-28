@@ -12,7 +12,6 @@ export type CoherenceDimensions = {
   objectiveClarity: number;
   contextRichness: number;
   constraintDefinition: number;
-  complexityFit: number;
 };
 
 export type CoherenceResult = {
@@ -37,6 +36,11 @@ const BIAS_PENALTIES: Record<Bias, number> = {
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
+export function countWords(text: string): number {
+  const normalized = text.trim();
+  return normalized ? normalized.split(/\s+/).length : 0;
+}
+
 export function complexityFit(wordCount: number): number {
   if (wordCount < 8) return 3;
   if (wordCount <= 15) return 8;
@@ -52,25 +56,24 @@ export function biasClean(biases: Bias[]): number {
 
 export function detectArchetype(text: string): Archetype {
   const value = text.toLocaleLowerCase();
-  const has = (...keywords: string[]) => keywords.some((keyword) => value.includes(keyword));
+  const includesAny = (...keywords: string[]) => keywords.some((keyword) => value.includes(keyword));
 
-  if (has('optimización', 'optimizar') && has('métrica', 'métricas')) return 'Táctico';
-  if (has('creación', 'crear') && has('innovación', 'innovar')) return 'Divergente';
-  if (has('aprendizaje', 'aprender') && has('incertidumbre', 'incierto')) return 'Exploración';
+  if (includesAny('optimización', 'optimizar') && includesAny('métrica', 'métricas')) return 'Táctico';
+  if (includesAny('creación', 'crear') && includesAny('innovación', 'innovar')) return 'Divergente';
+  if (includesAny('aprendizaje', 'aprender') && includesAny('incertidumbre', 'incierto')) return 'Exploración';
   return 'Lineal';
 }
 
 export function coherenceScore(
   dimensions: CoherenceDimensions,
   biases: Bias[],
-  wordCount: number,
   text: string
 ): CoherenceResult {
   const d1 = clamp(dimensions.objectiveClarity, 0, 25);
   const d2 = clamp(dimensions.contextRichness, 0, 20);
   const d3 = clamp(dimensions.constraintDefinition, 0, 20);
   const d4 = biasClean(biases);
-  const d5 = complexityFit(wordCount);
+  const d5 = complexityFit(countWords(text));
 
   return {
     score: d1 + d2 + d3 + d4 + d5,
