@@ -1,0 +1,9 @@
+import { Link, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+const pages: Record<string,string>={ '/':'Inicio','/auth':'Acceso','/onboarding':'Onboarding','/prompt-builder':'Prompt Builder','/gimnasio':'Gimnasio','/dashboard':'Dashboard','/comparar':'Comparar','/historial':'Historial','/analytics':'Analytics','/creador':'Creador'};
+function Theme(){const [dark,setDark]=useState(false);useEffect(()=>{document.documentElement.classList.toggle('dark',dark)},[dark]);return <button className="button ghost" onClick={()=>setDark(!dark)}>{dark?'☀ Claro':'◐ Oscuro'}</button>}
+function Layout({children}:{children:React.ReactNode}){const loc=useLocation();return <div className="app-shell"><header><Link className="brand" to="/">CognitiveGYM <span>NeoX</span></Link><nav>{Object.entries(pages).slice(1).map(([to,label])=><Link className={loc.pathname===to?'active':''} key={to} to={to}>{label}</Link>)}</nav><Theme/></header><main>{children}</main><footer>Entrená el criterio que genera mejores decisiones.</footer></div>}
+function Screen({title}:{title:string}){return <section className="screen"><p className="eyebrow">CognitiveGYM-NeoX</p><h1>{title}</h1><p>Fundación de interfaz lista para la siguiente fase.</p></section>}
+function Training(){return <Screen title="Entrenamiento" />}
+function NotFound(){return <Screen title="404 — Ruta no encontrada" />}
+export default function App(){return <Layout><Routes><Route path="/" element={<Screen title="Gimnasio cognitivo para operadores de IA" />}/>{Object.entries(pages).slice(1).map(([path,title])=><Route key={path} path={path} element={<Screen title={title}/>}/>)}<Route path="/training/:id" element={<Training/>}/><Route path="*" element={<NotFound/>}/></Routes></Layout>}
