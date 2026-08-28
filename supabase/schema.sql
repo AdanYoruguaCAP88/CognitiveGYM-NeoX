@@ -48,23 +48,23 @@ create table public.cognitive_vectors (
   updated_at timestamptz not null default now()
 );
 
-create or replace function public.is_admin(uid uuid)
-returns boolean language sql security definer set search_path = public as $$
+create schema if not exists private;
+
+create or replace function private.is_admin(uid uuid)
+returns boolean
+language sql
+security definer
+set search_path = ''
+as $$
   select coalesce((select is_admin from public.profiles where id = uid), false);
 $$;
 
-alter table public.profiles enable row level security;
-alter table public.subscriptions enable row level security;
-alter table public.decision_points enable row level security;
-alter table public.cognitive_vectors enable row level security;
-
-create policy "own profile" on public.profiles for all using (auth.uid() = id or public.is_admin(auth.uid()));
-create policy "own subscription" on public.subscriptions for select using (auth.uid() = user_id or public.is_admin(auth.uid()));
-create policy "own decisions" on public.decision_points for all using (auth.uid() = user_id or public.is_admin(auth.uid())) with check (auth.uid() = user_id);
-create policy "own vector" on public.cognitive_vectors for select using (auth.uid() = user_id or public.is_admin(auth.uid()));
-
-create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer set search_path = public as $$
+create or replace function private.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
 begin
   insert into public.profiles (id, email)
   values (new.id, new.email);
@@ -76,6 +76,19 @@ begin
 end;
 $$;
 
+alter table public.profiles enable row level security;
+alter table public.subscriptions enable row level security;
+alter table public.decision_points enable row level security;
+alter table public.cognitive_vectors enable row level security;
+
+create policy "own profile" on public.profiles for all using (auth.uid() = id or private.is_admin(auth.uid())) with check (auth.uid() = id or private.is_admin(auth.uid()));
+create policy "own subscription" on public.subscriptions for select using (auth.uid() = user_id or private.is_admin(auth.uid()));
+create policy "own decisions" on public.decision_points for all using (auth.uid() = user_id or private.is_admin(auth.uid())) with check (auth.uid() = user_id);
+create policy "own vector" on public.cognitive_vectors for select using (auth.uid() = user_id or private.is_admin(auth.uid()));
+
+revoke all on function private.is_admin(uuid) from public, anon, authenticated;
+revoke all on function private.handle_new_user() from public, anon, authenticated;
+
 create trigger on_auth_user_created
   after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+  for each row execute procedure private.handle_new_user();
