@@ -1,6 +1,18 @@
 import { supabase } from './supabase';
+import type { Archetype } from './engine/coherence';
 
 export type OnboardingStatus = 'pending' | 'complete';
+
+const ARCHETYPE_STORAGE: Record<Archetype, DiagnosisPersistenceInput['archetype']> = {
+  Táctico: 'tactico',
+  Divergente: 'divergente',
+  Exploración: 'exploracion',
+  Lineal: 'lineal'
+};
+
+export function toPersistenceArchetype(archetype: Archetype): DiagnosisPersistenceInput['archetype'] {
+  return ARCHETYPE_STORAGE[archetype];
+}
 
 export async function getOnboardingStatus(userId: string): Promise<OnboardingStatus> {
   const { data, error } = await supabase
