@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-export type OnboardingStatus = 'loading' | 'pending' | 'complete';
+export type OnboardingStatus = 'pending' | 'complete';
 
 export async function getOnboardingStatus(userId: string): Promise<OnboardingStatus> {
   const { data, error } = await supabase
@@ -14,14 +14,16 @@ export async function getOnboardingStatus(userId: string): Promise<OnboardingSta
   return data && data.length > 0 ? 'complete' : 'pending';
 }
 
-export async function persistDiagnosis(input: {
+export type DiagnosisPersistenceInput = {
   userId: string;
   coherenceScore: number;
   archetype: 'lineal' | 'divergente' | 'tactico' | 'exploracion';
   biases: string[];
   vectorBefore: Record<string, number>;
   vectorAfter: Record<string, number>;
-}) {
+};
+
+export async function persistDiagnosis(input: DiagnosisPersistenceInput) {
   const { error } = await supabase.from('decision_points').insert({
     user_id: input.userId,
     type: 'diagnosis',
