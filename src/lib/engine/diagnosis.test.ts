@@ -24,8 +24,8 @@ describe('diagnosis integration', () => {
     expect(result.coherence.score).toBeGreaterThanOrEqual(0);
     expect(result.coherence.score).toBeLessThanOrEqual(100);
     expect(result.archetype).toBe('Táctico');
-    expect(result.vectorBefore.clarity).toBe(30);
-    expect(result.vectorAfter.clarity).toBe(40);
+    expect(result.vectorBefore?.clarity).toBe(30);
+    expect(result.vectorAfter?.clarity).toBe(40);
   });
 
   it('creates the canonical persistence payload from a diagnosis', () => {
