@@ -24,6 +24,19 @@ export async function signInWithGoogle(nextPath = '/') {
   });
 }
 
+export async function requestPasswordRecovery(email: string) {
+  const redirectTo = new URL('/auth', window.location.origin);
+  redirectTo.searchParams.set('recovery', '1');
+
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectTo.toString()
+  });
+}
+
+export async function updatePassword(password: string) {
+  return supabase.auth.updateUser({ password });
+}
+
 export async function signOut() {
   return supabase.auth.signOut();
 }
