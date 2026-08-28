@@ -1,40 +1,60 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { signIn, signInWithGoogle, signUp } from '../lib/auth';
+
+type AuthLocationState = { from?: string };
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as AuthLocationState | null)?.from ?? '/';
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     setMessage('');
-    const result = mode === 'signin' ? await signIn(email, password) : await signUp(email, password);
-    if (result.error) {
-      setMessage(result.error.message);
-      return;
+
+    try {
+      const result = mode === 'signin' ? await signIn(email, password) : await signUp(email, password);
+      if (result.error) {
+        setMessage(result.error.message);
+        return;
+      }
+
+      if (mode === 'signin') navigate(from, { replace: true });
+      else setMessage('Registro realizado. Verificá tu correo si Supabase requiere confirmación.');
+    } finally {
+      setSubmitting(false);
     }
-    if (mode === 'signin') navigate('/');
-    else setMessage('Registro realizado. Verificá tu correo si Supabase requiere confirmación.');
   }
 
   async function google() {
+    if (submitting) return;
+    setSubmitting(true);
     setMessage('');
-    const result = await signInWithGoogle();
-    if (result.error) setMessage(result.error.message);
+
+    try {
+      const result = await signInWithGoogle();
+      if (result.error) setMessage(result.error.message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return <section className="screen auth-screen"><p className="eyebrow">CognitiveGYM-NeoX</p><h1>{mode === 'signin' ? 'Acceso' : 'Crear cuenta'}</h1>
     <form onSubmit={submit} className="auth-form">
       <label>Email<input type="email" value={email} onChange={event => setEmail(event.target.value)} required /></label>
       <label>Contraseña<input type="password" value={password} onChange={event => setPassword(event.target.value)} required /></label>
-      <button className="button" type="submit">{mode === 'signin' ? 'Ingresar' : 'Registrarme'}</button>
+      <button className="button" type="submit" disabled={submitting}>{submitting ? 'Procesando…' : mode === 'signin' ? 'Ingresar' : 'Registrarme'}</button>
     </form>
-    <button className="button ghost" type="button" onClick={google}>Continuar con Google</button>
-    <button className="button ghost" type="button" onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}>{mode === 'signin' ? 'Crear cuenta' : 'Ya tengo cuenta'}</button>
+    <button className="button ghost" type="button" onClick={google} disabled={submitting}>Continuar con Google</button>
+    <button className="button ghost" type="button" onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')} disabled={submitting}>{mode === 'signin' ? 'Crear cuenta' : 'Ya tengo cuenta'}</button>
     {message && <p role="status">{message}</p>}
   </section>;
 }
