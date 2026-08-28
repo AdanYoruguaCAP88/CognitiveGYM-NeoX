@@ -12,16 +12,16 @@ export type DiagnosisResult = {
   coherence: CoherenceResult;
   archetype: Archetype;
   biases: Bias[];
-  vectorBefore: CognitiveVector;
-  vectorAfter: CognitiveVector;
+  vectorBefore: CognitiveVector | null;
+  vectorAfter: CognitiveVector | null;
 };
 
 export function createDiagnosis(
   dimensions: CoherenceDimensions,
   biases: Bias[],
   text: string,
-  vectorBefore: CognitiveVector,
-  vectorAfter: CognitiveVector
+  vectorBefore: CognitiveVector | null,
+  vectorAfter: CognitiveVector | null
 ): DiagnosisResult {
   const coherence = coherenceScore(dimensions, biases, text);
 
