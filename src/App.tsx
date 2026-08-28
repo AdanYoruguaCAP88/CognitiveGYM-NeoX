@@ -9,7 +9,6 @@ import DashboardPage from './pages/DashboardPage';
 import OnboardingPage from './pages/OnboardingPage';
 
 const protectedPages: Record<string, string> = {
-  
   '/prompt-builder': 'Prompt Builder',
   '/gimnasio': 'Gimnasio',
   '/comparar': 'Comparar',
@@ -20,8 +19,10 @@ const protectedPages: Record<string, string> = {
 
 function Theme() {
   const [dark, setDark] = useState(false);
-  useEffect(() => document.documentElement.classList.toggle('dark', dark), [dark]);
-  return <button className="button ghost" onClick={() => setDark(!dark)}>{dark ? '☀ Claro' : '◐ Oscuro'}</button>;
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+  }, [dark]);
+  return <button className="button ghost" onClick={() => setDark((value) => !value)}>{dark ? '☀ Claro' : '◐ Oscuro'}</button>;
 }
 
 function Layout({ children }: { children: ReactNode }) {
@@ -30,7 +31,7 @@ function Layout({ children }: { children: ReactNode }) {
   return <div className="app-shell"><header>
     <Link className="brand" to="/">CognitiveGYM <span>NeoX</span></Link>
     <nav>{[...Object.entries(protectedPages), ['/dashboard', 'Dashboard']].map(([to, label]) => <Link className={loc.pathname === to ? 'active' : ''} key={to} to={to}>{label}</Link>)}</nav>
-    {session ? <button className="button ghost" onClick={() => signOut()}>Salir</button> : <Link className="button ghost" to="/auth">Acceso</Link>}
+    {session ? <button className="button ghost" onClick={() => { void signOut(); }}>Salir</button> : <Link className="button ghost" to="/auth">Acceso</Link>}
     <Theme />
   </header><main>{children}</main><footer>Entrená el criterio que genera mejores decisiones.</footer></div>;
 }
