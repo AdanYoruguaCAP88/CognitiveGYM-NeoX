@@ -23,7 +23,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   }, [session?.user.id]);
 
   if (loading || status === 'loading') return <p>Verificando acceso…</p>;
-  if (!session) return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
+  if (!session) return <Navigate to="/auth" replace state={{ from: `${location.pathname}${location.search}${location.hash}` }} />;
   if (status === 'pending') return <Navigate to="/onboarding" replace />;
   if (status === 'error') return <section className="screen"><h1>No se pudo verificar el onboarding</h1><p>Reintentá cuando la conexión esté disponible.</p></section>;
 
