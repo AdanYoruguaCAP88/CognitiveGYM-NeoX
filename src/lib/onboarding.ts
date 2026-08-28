@@ -24,15 +24,30 @@ export type DiagnosisPersistenceInput = {
 };
 
 export async function persistDiagnosis(input: DiagnosisPersistenceInput) {
-  const { error } = await supabase.from('decision_points').insert({
-    user_id: input.userId,
-    type: 'diagnosis',
-    coherence_score: input.coherenceScore,
-    archetype: input.archetype,
-    biases: input.biases,
-    vector_before: input.vectorBefore,
-    vector_after: input.vectorAfter
-  });
+  const { data: existing, error: lookupError } = await supabase
+    .from('decision_points')
+    .select('id')
+    .eq('user_id', input.userId)
+    .eq('type', 'diagnosis')
+    .limit(1);
+
+  if (lookupError) throw lookupError;
+  if (existing && existing.length > 0) return existing[0];
+
+  const { data, error } = await supabase
+    .from('decision_points')
+    .insert({
+      user_id: input.userId,
+      type: 'diagnosis',
+      coherence_score: input.coherenceScore,
+      archetype: input.archetype,
+      biases: input.biases,
+      vector_before: input.vectorBefore,
+      vector_after: input.vectorAfter
+    })
+    .select('id')
+    .single();
 
   if (error) throw error;
+  return data;
 }
