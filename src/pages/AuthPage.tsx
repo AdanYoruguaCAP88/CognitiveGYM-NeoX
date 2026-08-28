@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { signIn, signInWithGoogle, signUp } from '../lib/auth';
 import { useAuth } from '../auth/AuthContext';
@@ -28,16 +28,16 @@ export default function AuthPage() {
     if (submitting) return;
     setSubmitting(true);
     setMessage('');
-
     try {
       const result = mode === 'signin' ? await signIn(email, password) : await signUp(email, password);
       if (result.error) {
         setMessage(result.error.message);
         return;
       }
-
       if (mode === 'signin') navigate(from, { replace: true });
       else setMessage('Registro realizado. Verificá tu correo si Supabase requiere confirmación.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo completar la operación.');
     } finally {
       setSubmitting(false);
     }
@@ -47,10 +47,11 @@ export default function AuthPage() {
     if (submitting) return;
     setSubmitting(true);
     setMessage('');
-
     try {
       const result = await signInWithGoogle(from);
       if (result.error) setMessage(result.error.message);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo iniciar Google.');
     } finally {
       setSubmitting(false);
     }
@@ -63,7 +64,7 @@ export default function AuthPage() {
       <button className="button" type="submit" disabled={submitting}>{submitting ? 'Procesando…' : mode === 'signin' ? 'Ingresar' : 'Registrarme'}</button>
     </form>
     <button className="button ghost" type="button" onClick={google} disabled={submitting}>Continuar con Google</button>
-    <button className="button ghost" type="button" onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')} disabled={submitting}>{mode === 'signin' ? 'Crear cuenta' : 'Ya tengo cuenta'}</button>
+    <button className="button ghost" type="button" onClick={() => setMode((value) => value === 'signin' ? 'signup' : 'signin')} disabled={submitting}>{mode === 'signin' ? 'Crear cuenta' : 'Ya tengo cuenta'}</button>
     {message && <p role="status">{message}</p>}
   </section>;
 }
