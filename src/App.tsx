@@ -1,6 +1,7 @@
 import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect, useState, type ReactNode } from 'react';
 import { ProtectedRoute } from './auth/ProtectedRoute';
+import { OnboardingGate } from './auth/OnboardingGate';
 import { useAuth } from './auth/AuthContext';
 import { signOut } from './lib/auth';
 import AuthPage from './pages/AuthPage';
@@ -41,17 +42,17 @@ function Screen({ title }: { title: string }) {
 function Training() { return <Screen title="Entrenamiento" />; }
 function NotFound() { return <Screen title="404 — Ruta no encontrada" />; }
 function ProtectedScreen({ title }: { title: string }) {
-  return <ProtectedRoute><Screen title={title} /></ProtectedRoute>;
+  return <ProtectedRoute><OnboardingGate><Screen title={title} /></OnboardingGate></ProtectedRoute>;
 }
 
 export default function App() {
   return <Layout><Routes>
     <Route path="/" element={<Screen title="Gimnasio cognitivo para operadores de IA" />} />
     <Route path="/auth" element={<AuthPage />} />
-    <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+    <Route path="/dashboard" element={<ProtectedRoute><OnboardingGate><DashboardPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
     {Object.entries(protectedPages).map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
-    <Route path="/training/:id" element={<ProtectedRoute><Training /></ProtectedRoute>} />
+    <Route path="/training/:id" element={<ProtectedRoute><OnboardingGate><Training /></OnboardingGate></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes></Layout>;
 }
