@@ -9,11 +9,14 @@ export async function signIn(email: string, password: string) {
   return supabase.auth.signInWithPassword({ email, password });
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(nextPath = '/') {
+  const target = new URL(window.location.origin);
+  target.searchParams.set('next', nextPath.startsWith('/') ? nextPath : '/');
+
   return supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin + '/'
+      redirectTo: target.toString()
     }
   });
 }
