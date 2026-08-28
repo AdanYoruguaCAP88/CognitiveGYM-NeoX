@@ -1,20 +1,27 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { signIn, signInWithGoogle, signUp } from '../lib/auth';
+import { useAuth } from '../auth/AuthContext';
 
 type AuthLocationState = { from?: string };
 
 export default function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { session, loading } = useAuth();
   const stateFrom = (location.state as AuthLocationState | null)?.from;
   const queryFrom = new URLSearchParams(location.search).get('next');
-  const from = stateFrom ?? (queryFrom && queryFrom.startsWith('/') && !queryFrom.startsWith('//') ? queryFrom : '/');
+  const candidate = stateFrom ?? queryFrom ?? '/';
+  const from = candidate.startsWith('/') && !candidate.startsWith('//') ? candidate : '/';
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && session) navigate(from, { replace: true });
+  }, [from, loading, navigate, session]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
