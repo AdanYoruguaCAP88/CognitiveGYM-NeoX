@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createDiagnosis } from './diagnosis';
+import { createDiagnosis, toDiagnosisPersistenceInput } from './diagnosis';
 import type { CognitiveVector } from './adaptive';
 
 const vector = (value: number): CognitiveVector => ({
@@ -26,5 +26,19 @@ describe('diagnosis integration', () => {
     expect(result.archetype).toBe('Táctico');
     expect(result.vectorBefore.clarity).toBe(30);
     expect(result.vectorAfter.clarity).toBe(40);
+  });
+
+  it('creates the canonical persistence payload from a diagnosis', () => {
+    const diagnosis = createDiagnosis(
+      { objectiveClarity: 10, contextRichness: 10, constraintDefinition: 10 },
+      [],
+      'creación e innovación',
+      vector(20),
+      vector(30)
+    );
+    const payload = toDiagnosisPersistenceInput('user-1', diagnosis);
+    expect(payload.userId).toBe('user-1');
+    expect(payload.archetype).toBe('divergente');
+    expect(payload.coherenceScore).toBe(diagnosis.coherence.score);
   });
 });
