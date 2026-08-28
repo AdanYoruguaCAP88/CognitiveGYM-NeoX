@@ -16,10 +16,16 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
 
     let active = true;
     getOnboardingStatus(session.user.id)
-      .then((value) => active && setStatus(value))
-      .catch(() => active && setStatus('error'));
+      .then((value) => {
+        if (active) setStatus(value);
+      })
+      .catch(() => {
+        if (active) setStatus('error');
+      });
 
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [session?.user.id]);
 
   if (loading || status === 'loading') return <p>Verificando acceso…</p>;
