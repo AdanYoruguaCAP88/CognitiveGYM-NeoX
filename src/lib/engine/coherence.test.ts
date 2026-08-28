@@ -38,6 +38,16 @@ describe('coherence engine', () => {
     expect(biasClean(biases)).toBe(0);
   });
 
+  it('handles empty input without leaving the documented score range', () => {
+    const result = coherenceScore(
+      { objectiveClarity: 0, contextRichness: 0, constraintDefinition: 0 },
+      [],
+      ''
+    );
+    expect(result.score).toBe(23);
+    expect(result.archetype).toBe('Lineal');
+  });
+
   it('derives D5 from the supplied prompt text', () => {
     const result = coherenceScore(
       { objectiveClarity: 25, contextRichness: 20, constraintDefinition: 20 },
