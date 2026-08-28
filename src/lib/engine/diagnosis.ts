@@ -6,6 +6,7 @@ import {
   type CoherenceResult
 } from './coherence';
 import type { CognitiveVector } from './adaptive';
+import { toPersistenceArchetype, type DiagnosisPersistenceInput } from '../onboarding';
 
 export type DiagnosisResult = {
   coherence: CoherenceResult;
@@ -30,5 +31,16 @@ export function createDiagnosis(
     biases: coherence.biases,
     vectorBefore,
     vectorAfter
+  };
+}
+
+export function toDiagnosisPersistenceInput(userId: string, diagnosis: DiagnosisResult): DiagnosisPersistenceInput {
+  return {
+    userId,
+    coherenceScore: diagnosis.coherence.score,
+    archetype: toPersistenceArchetype(diagnosis.archetype),
+    biases: diagnosis.biases,
+    vectorBefore: diagnosis.vectorBefore,
+    vectorAfter: diagnosis.vectorAfter
   };
 }
