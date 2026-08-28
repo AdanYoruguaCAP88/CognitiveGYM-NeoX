@@ -28,10 +28,13 @@ function Theme() {
 function Layout({ children }: { children: ReactNode }) {
   const loc = useLocation();
   const { session } = useAuth();
+  async function handleSignOut() {
+    await signOut();
+  }
   return <div className="app-shell"><header>
     <Link className="brand" to="/">CognitiveGYM <span>NeoX</span></Link>
     <nav>{[...Object.entries(protectedPages), ['/dashboard', 'Dashboard']].map(([to, label]) => <Link className={loc.pathname === to ? 'active' : ''} key={to} to={to}>{label}</Link>)}</nav>
-    {session ? <button className="button ghost" onClick={() => { void signOut(); }}>Salir</button> : <Link className="button ghost" to="/auth">Acceso</Link>}
+    {session ? <button className="button ghost" onClick={() => { void handleSignOut(); }}>Salir</button> : <Link className="button ghost" to="/auth">Acceso</Link>}
     <Theme />
   </header><main>{children}</main><footer>Entrená el criterio que genera mejores decisiones.</footer></div>;
 }
