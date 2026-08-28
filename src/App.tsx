@@ -4,12 +4,12 @@ import { ProtectedRoute } from './auth/ProtectedRoute';
 import { useAuth } from './auth/AuthContext';
 import { signOut } from './lib/auth';
 import AuthPage from './pages/AuthPage';
+import DashboardPage from './pages/DashboardPage';
 
 const protectedPages: Record<string, string> = {
   '/onboarding': 'Onboarding',
   '/prompt-builder': 'Prompt Builder',
   '/gimnasio': 'Gimnasio',
-  '/dashboard': 'Dashboard',
   '/comparar': 'Comparar',
   '/historial': 'Historial',
   '/analytics': 'Analytics',
@@ -27,7 +27,7 @@ function Layout({ children }: { children: ReactNode }) {
   const { session } = useAuth();
   return <div className="app-shell"><header>
     <Link className="brand" to="/">CognitiveGYM <span>NeoX</span></Link>
-    <nav>{Object.entries(protectedPages).map(([to, label]) => <Link className={loc.pathname === to ? 'active' : ''} key={to} to={to}>{label}</Link>)}</nav>
+    <nav>{[...Object.entries(protectedPages), ['/dashboard', 'Dashboard']].map(([to, label]) => <Link className={loc.pathname === to ? 'active' : ''} key={to} to={to}>{label}</Link>)}</nav>
     {session ? <button className="button ghost" onClick={() => signOut()}>Salir</button> : <Link className="button ghost" to="/auth">Acceso</Link>}
     <Theme />
   </header><main>{children}</main><footer>Entrená el criterio que genera mejores decisiones.</footer></div>;
@@ -47,6 +47,7 @@ export default function App() {
   return <Layout><Routes>
     <Route path="/" element={<Screen title="Gimnasio cognitivo para operadores de IA" />} />
     <Route path="/auth" element={<AuthPage />} />
+    <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
     {Object.entries(protectedPages).map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
     <Route path="/training/:id" element={<ProtectedRoute><Training /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
