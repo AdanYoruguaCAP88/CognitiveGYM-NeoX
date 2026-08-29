@@ -6,7 +6,11 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) return null;
-  if (!session) return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
+  if (loading) return <p>Verificando sesión…</p>;
+  if (!session) {
+    const from = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to="/auth" replace state={{ from }} />;
+  }
+
   return <>{children}</>;
 }

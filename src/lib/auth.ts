@@ -9,13 +9,32 @@ export async function signIn(email: string, password: string) {
   return supabase.auth.signInWithPassword({ email, password });
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(nextPath = '/') {
+  const target = new URL('/auth', window.location.origin);
+  target.searchParams.set(
+    'next',
+    nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/'
+  );
+
   return supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin + '/'
+      redirectTo: target.toString()
     }
   });
+}
+
+export async function requestPasswordRecovery(email: string) {
+  const redirectTo = new URL('/auth', window.location.origin);
+  redirectTo.searchParams.set('recovery', '1');
+
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectTo.toString()
+  });
+}
+
+export async function updatePassword(password: string) {
+  return supabase.auth.updateUser({ password });
 }
 
 export async function signOut() {
