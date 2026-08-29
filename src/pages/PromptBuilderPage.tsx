@@ -25,6 +25,7 @@ export default function PromptBuilderPage() {
   const [text,setText] = useState('');
   const [dimensions,setDimensions] = useState<CoherenceDimensions>({objectiveClarity:0,contextRichness:0,constraintDefinition:0});
   const [saved,setSaved] = useState('');
+  const [saving,setSaving] = useState(false);
   const biases = useMemo(()=>detectBiases(text),[text]);
   const result = useMemo(()=>coherenceScore(dimensions,biases,text),[dimensions,biases,text]);
   const blocked = result.score < 40;
@@ -32,9 +33,11 @@ export default function PromptBuilderPage() {
   const output = blocked ? null : `[${templates[template]}] ${text.trim()}`;
 
   const submit = async () => {
-    if (!session || !text.trim()) return;
-    await savePromptDecision({userId:session.user.id,template,rawInput:text,generatedOutput:output,coherenceScore:result.score,wasBlocked:blocked,biases:result.biases});
-    setSaved(blocked ? 'Intento bloqueado y guardado para auditoría.' : 'Intento guardado.');
+    if (!session || !text.trim() || saving) return;
+    setSaving(true); setSaved('');
+    try { await savePromptDecision({userId:session.user.id,template,rawInput:text,generatedOutput:output,coherenceScore:result.score,wasBlocked:blocked,biases:result.biases}); setSaved(blocked ? 'Intento bloqueado y guardado para auditoría.' : 'Intento guardado.'); }
+    catch (error) { setSaved(error instanceof Error ? error.message : 'No se pudo guardar el intento.'); }
+    finally { setSaving(false); }
   };
 
   return <section className="screen">
@@ -50,7 +53,7 @@ export default function PromptBuilderPage() {
       {!blocked && !warning && <p>Coherencia limpia.</p>}
     </article>
     {!blocked && output && <pre>{output}</pre>}
-    <button className="button" onClick={()=>void submit()} disabled={!text.trim()}>Guardar intento</button>
+    <button className="button" onClick={()=>void submit()} disabled={!text.trim() || saving}>{saving ? 'Guardando…' : 'Guardar intento'}</button>
     {saved && <p>{saved}</p>}
   </section>;
 }
