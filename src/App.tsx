@@ -16,6 +16,7 @@ import OnboardingPage from './pages/OnboardingPage';
 
 const protectedPages: Record<string, string> = {
   '/prompt-builder': 'Prompt Builder',
+  '/training': 'Entrenamiento',
   '/gimnasio': 'Gimnasio',
   '/comparar': 'Comparar',
   '/historial': 'Historial',
@@ -49,7 +50,6 @@ function Screen({ title }: { title: string }) {
   return <section className="screen"><p className="eyebrow">CognitiveGYM-NeoX</p><h1>{title}</h1><p>Fundación de interfaz lista para la siguiente fase.</p></section>;
 }
 
-function Training() { return <Screen title="Entrenamiento" />; }
 function NotFound() { return <Screen title="404 — Ruta no encontrada" />; }
 function ProtectedScreen({ title }: { title: string }) {
   return <ProtectedRoute><OnboardingGate><Screen title={title} /></OnboardingGate></ProtectedRoute>;
@@ -66,8 +66,9 @@ export default function App() {
     <Route path="/analytics" element={<ProtectedRoute><OnboardingGate><AnalyticsPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/gimnasio" element={<ProtectedRoute><OnboardingGate><GymPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/training/:id" element={<ProtectedRoute><OnboardingGate><TrainingPage /></OnboardingGate></ProtectedRoute>} />
+    <Route path="/training" element={<ProtectedRoute><OnboardingGate><GymPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/historial" element={<ProtectedRoute><OnboardingGate><HistoryPage /></OnboardingGate></ProtectedRoute>} />
-    {Object.entries(protectedPages).filter(([path]) => path !== '/prompt-builder' && path !== '/historial' && path !== '/gimnasio' && path !== '/comparar' && path !== '/analytics').map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
+    {Object.entries(protectedPages).filter(([path]) => path !== '/prompt-builder' && path !== '/historial' && path !== '/gimnasio' && path !== '/comparar' && path !== '/analytics' && path !== '/training').map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
 
     <Route path="*" element={<NotFound />} />
   </Routes></Layout>;
