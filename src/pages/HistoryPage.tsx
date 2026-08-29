@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import { currentPlan, listDecisionPoints } from '../lib/decisionPoints';
+import { listDecisionPoints } from '../lib/decisionPoints';
+import { currentPlan } from '../lib/plan';
 
 type Row = { id:string; type:string; raw_input:string|null; coherence_score:number|null; was_blocked:boolean; created_at:string };
 
