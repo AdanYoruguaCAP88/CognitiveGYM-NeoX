@@ -8,6 +8,8 @@ import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import PromptBuilderPage from './pages/PromptBuilderPage';
 import HistoryPage from './pages/HistoryPage';
+import GymPage from './pages/GymPage';
+import TrainingPage from './pages/TrainingPage';
 import OnboardingPage from './pages/OnboardingPage';
 
 const protectedPages: Record<string, string> = {
@@ -58,9 +60,11 @@ export default function App() {
     <Route path="/dashboard" element={<ProtectedRoute><OnboardingGate><DashboardPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
     <Route path="/prompt-builder" element={<ProtectedRoute><OnboardingGate><PromptBuilderPage /></OnboardingGate></ProtectedRoute>} />
+    <Route path="/gimnasio" element={<ProtectedRoute><OnboardingGate><GymPage /></OnboardingGate></ProtectedRoute>} />
+    <Route path="/training/:id" element={<ProtectedRoute><OnboardingGate><TrainingPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/historial" element={<ProtectedRoute><OnboardingGate><HistoryPage /></OnboardingGate></ProtectedRoute>} />
-    {Object.entries(protectedPages).filter(([path]) => path !== '/prompt-builder' && path !== '/historial').map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
-    <Route path="/training/:id" element={<ProtectedRoute><OnboardingGate><Training /></OnboardingGate></ProtectedRoute>} />
+    {Object.entries(protectedPages).filter(([path]) => path !== '/prompt-builder' && path !== '/historial' && path !== '/gimnasio').map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
+
     <Route path="*" element={<NotFound />} />
   </Routes></Layout>;
 }
