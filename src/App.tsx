@@ -6,6 +6,8 @@ import { useAuth } from './auth/AuthContext';
 import { signOut } from './lib/auth';
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
+import PromptBuilderPage from './pages/PromptBuilderPage';
+import HistoryPage from './pages/HistoryPage';
 import OnboardingPage from './pages/OnboardingPage';
 
 const protectedPages: Record<string, string> = {
@@ -55,7 +57,9 @@ export default function App() {
     <Route path="/auth" element={<AuthPage />} />
     <Route path="/dashboard" element={<ProtectedRoute><OnboardingGate><DashboardPage /></OnboardingGate></ProtectedRoute>} />
     <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
-    {Object.entries(protectedPages).map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
+    <Route path="/prompt-builder" element={<ProtectedRoute><OnboardingGate><PromptBuilderPage /></OnboardingGate></ProtectedRoute>} />
+    <Route path="/historial" element={<ProtectedRoute><OnboardingGate><HistoryPage /></OnboardingGate></ProtectedRoute>} />
+    {Object.entries(protectedPages).filter(([path]) => path !== '/prompt-builder' && path !== '/historial').map(([path, title]) => <Route key={path} path={path} element={<ProtectedScreen title={title} />} />)}
     <Route path="/training/:id" element={<ProtectedRoute><OnboardingGate><Training /></OnboardingGate></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes></Layout>;
