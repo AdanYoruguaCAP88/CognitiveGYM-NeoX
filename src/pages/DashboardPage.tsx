@@ -1,12 +1,3 @@
-import { useAuth } from '../auth/AuthContext';
-
-export default function DashboardPage() {
-  const { session } = useAuth();
-
-  return <section className="screen">
-    <p className="eyebrow">CognitiveGYM-NeoX</p>
-    <h1>Dashboard</h1>
-    <p>Sesión activa: {session?.user.email}</p>
-    <p>Los datos cognitivos se conectarán únicamente cuando exista una fuente de datos especificada para esta pantalla.</p>
-  </section>;
-}
+import {useEffect,useState} from 'react';import {useAuth} from '../auth/AuthContext';import {listDecisionPoints} from '../lib/decisionPoints';import {maturityState,type CognitiveVector} from '../lib/engine/adaptive';
+const zero:CognitiveVector={clarity:0,coherence:0,depth:0,structure:0,secondOrder:0,biasControl:0};
+export default function DashboardPage(){const {session}=useAuth();const [vector,setVector]=useState<CognitiveVector>(zero);const [count,setCount]=useState(0);useEffect(()=>{if(!session)return;let active=true;void listDecisionPoints(session.user.id).then(rows=>{if(!active)return;const last=[...rows].find((r:any)=>r.vector_after);if(last?.vector_after)setVector(last.vector_after as CognitiveVector);setCount(rows.length)});return()=>{active=false}},[session]);return <section className="screen"><p className="eyebrow">Dashboard</p><h1>Estado cognitivo</h1><p>Calculado desde {count} decision points guardados.</p><div className="grid">{Object.entries(vector).map(([k,v])=><article className="card" key={k}><strong>{k}</strong><p>{Number(v).toFixed(2)}</p></article>)}</div><h2>{maturityState(vector)}</h2></section>;}
