@@ -34,7 +34,7 @@ function Theme() {
 
 function Layout({ children }: { children: ReactNode }) {
   const loc = useLocation();
-  const { session } = useAuth();
+  const { session, configError } = useAuth();
   async function handleSignOut() {
     await signOut();
   }
