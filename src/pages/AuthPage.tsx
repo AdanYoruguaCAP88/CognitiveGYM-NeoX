@@ -15,7 +15,7 @@ type Mode = 'signin' | 'signup' | 'recovery-request' | 'recovery-update';
 export default function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { session, loading } = useAuth();
+  const { session, loading, configError } = useAuth();
   const stateFrom = (location.state as AuthLocationState | null)?.from;
   const query = new URLSearchParams(location.search);
   const queryFrom = query.get('next');
@@ -48,6 +48,11 @@ export default function AuthPage() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting) return;
+    if (configError) {
+      setMessage(configError);
+      return;
+    }
+
     setSubmitting(true);
     setMessage('');
 
@@ -94,6 +99,11 @@ export default function AuthPage() {
 
   async function google() {
     if (submitting) return;
+    if (configError) {
+      setMessage(configError);
+      return;
+    }
+
     setSubmitting(true);
     setMessage('');
     try {
@@ -117,6 +127,8 @@ export default function AuthPage() {
   return <section className="screen auth-screen">
     <p className="eyebrow">CognitiveGYM-NeoX</p>
     <h1>{title}</h1>
+
+    {configError && <p role="alert">{configError}</p>}
 
     <form onSubmit={submit} className="auth-form">
       {mode !== 'recovery-update' && (

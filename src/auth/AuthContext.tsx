@@ -10,7 +10,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(!supabaseConfigError);
 
   useEffect(() => {
-    if (!supabase) return;
+    if (supabaseConfigError) {
+      setLoading(false);
+      return;
+    }
 
     let active = true;
     supabase.auth.getSession()
