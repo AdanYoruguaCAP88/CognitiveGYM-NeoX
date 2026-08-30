@@ -22,8 +22,12 @@ export const supabaseConfigError =
     ? 'La configuración de Supabase no está disponible en esta implementación. Verificá VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en Vercel y redeployá.'
     : null;
 
-// The client remains typed and import-safe. Authentication calls are blocked by the
-// configuration guards when the production environment is incomplete.
+export function assertSupabaseConfigured() {
+  if (supabaseConfigError) throw new Error(supabaseConfigError);
+}
+
+// The client remains typed and import-safe. Calls are guarded so a missing
+// production configuration never becomes an opaque "Failed to fetch".
 export const supabase = createClient(
   url || 'https://configuration-missing.invalid',
   anonKey || 'configuration-missing'
